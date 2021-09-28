@@ -1,0 +1,33 @@
+{
+  "name": "fleamarket",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./server/bin/www",
+    "dev": "npm run build:server & npm run build:client",
+    "build:client": "webpack --watch",
+    "build:server": "nodemon --watch ./server ./server/bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^6.3.0",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.3.2",
+    "mini-css-extract-plugin": "^2.3.0",
+    "nodemon": "^2.0.13",
+    "sass": "^1.42.1",
+    "sass-loader": "^12.1.0",
+    "style-loader": "^3.3.0",
+    "webpack": "^5.54.0",
+    "webpack-cli": "^4.8.0"
+  }
+}

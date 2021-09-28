@@ -1,0 +1,192 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema fleamarket
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema fleamarket
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `fleamarket` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `fleamarket` ;
+
+-- -----------------------------------------------------
+-- Table `fleamarket`.`CATEGORY`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fleamarket`.`CATEGORY` (
+  `CATEGORY_NAME` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`CATEGORY_NAME`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `fleamarket`.`LOCATION_LIST`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fleamarket`.`LOCATION_LIST` (
+  `LOCATION` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`LOCATION`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `fleamarket`.`USER`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fleamarket`.`USER` (
+  `ID` VARCHAR(45) NOT NULL,
+  `PRI_LOCATION` VARCHAR(45) NULL,
+  `SEC_LOCATION` VARCHAR(45) NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `fk_USER_LOCATION_LIST1_idx` (`PRI_LOCATION` ASC) VISIBLE,
+  INDEX `fk_USER_LOCATION_LIST2_idx` (`SEC_LOCATION` ASC) VISIBLE,
+  CONSTRAINT `fk_USER_LOCATION_LIST1`
+    FOREIGN KEY (`PRI_LOCATION`)
+    REFERENCES `fleamarket`.`LOCATION_LIST` (`LOCATION`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_USER_LOCATION_LIST2`
+    FOREIGN KEY (`SEC_LOCATION`)
+    REFERENCES `fleamarket`.`LOCATION_LIST` (`LOCATION`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `fleamarket`.`PRODUCT`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fleamarket`.`PRODUCT` (
+  `PRODUCT_ID` INT UNSIGNED NOT NULL,
+  `CATEGORY_NAME` VARCHAR(45) NOT NULL,
+  `SELLER_ID` VARCHAR(45) NOT NULL,
+  `BUYER_ID` VARCHAR(45) NOT NULL,
+  `SELLER_LOCATION` VARCHAR(45) NOT NULL,
+  `TITLE` VARCHAR(45) NOT NULL,
+  `PRICE` INT UNSIGNED NOT NULL,
+  `CONTENT` VARCHAR(45) NOT NULL,
+  `STATUS` VARCHAR(10) NOT NULL DEFAULT 'SELL',
+  `IMAGE` LONGBLOB NOT NULL,
+  `CREATED_AT` TIMESTAMP NOT NULL,
+  `CHAT_COUNT` INT UNSIGNED NOT NULL DEFAULT '0',
+  `VIEW_COUNT` INT UNSIGNED NOT NULL DEFAULT '0',
+  `HEART_COUNT` INT UNSIGNED NULL DEFAULT '0',
+  PRIMARY KEY (`PRODUCT_ID`),
+  INDEX `fk_PRODUCT_CATEGORY1_idx` (`CATEGORY_NAME` ASC) VISIBLE,
+  INDEX `fk_PRODUCT_USER1_idx` (`BUYER_ID` ASC) VISIBLE,
+  INDEX `fk_PRODUCT_USER2_idx` (`SELLER_ID` ASC) VISIBLE,
+  INDEX `fk_PRODUCT_LOCATION_LIST1_idx` (`SELLER_LOCATION` ASC) VISIBLE,
+  CONSTRAINT `fk_PRODUCT_CATEGORY1`
+    FOREIGN KEY (`CATEGORY_NAME`)
+    REFERENCES `fleamarket`.`CATEGORY` (`CATEGORY_NAME`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PRODUCT_USER1`
+    FOREIGN KEY (`BUYER_ID`)
+    REFERENCES `fleamarket`.`USER` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PRODUCT_USER2`
+    FOREIGN KEY (`SELLER_ID`)
+    REFERENCES `fleamarket`.`USER` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PRODUCT_LOCATION_LIST1`
+    FOREIGN KEY (`SELLER_LOCATION`)
+    REFERENCES `fleamarket`.`LOCATION_LIST` (`LOCATION`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `fleamarket`.`CHAT_LIST`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fleamarket`.`CHAT_LIST` (
+  `CHAT_LIST_ID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `PRODUCT_PRODUCT_ID` INT UNSIGNED NOT NULL,
+  `SELLER_ID` VARCHAR(45) NOT NULL,
+  `BUYER_ID` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`CHAT_LIST_ID`),
+  INDEX `fk_CHAT_LIST_PRODUCT1_idx` (`PRODUCT_PRODUCT_ID` ASC) VISIBLE,
+  INDEX `fk_CHAT_LIST_USER1_idx` (`SELLER_ID` ASC) VISIBLE,
+  INDEX `fk_CHAT_LIST_USER2_idx` (`BUYER_ID` ASC) VISIBLE,
+  CONSTRAINT `fk_CHAT_LIST_PRODUCT1`
+    FOREIGN KEY (`PRODUCT_PRODUCT_ID`)
+    REFERENCES `fleamarket`.`PRODUCT` (`PRODUCT_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CHAT_LIST_USER1`
+    FOREIGN KEY (`SELLER_ID`)
+    REFERENCES `fleamarket`.`USER` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CHAT_LIST_USER2`
+    FOREIGN KEY (`BUYER_ID`)
+    REFERENCES `fleamarket`.`USER` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `fleamarket`.`WISH_LIST`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fleamarket`.`WISH_LIST` (
+  `ID` VARCHAR(45) NOT NULL,
+  `PRODUCT_ID` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`ID`, `PRODUCT_ID`),
+  INDEX `FK_PRODUCT_TO_WISH_LIST_1` (`PRODUCT_ID` ASC) VISIBLE,
+  CONSTRAINT `FK_PRODUCT_TO_WISH_LIST_1`
+    FOREIGN KEY (`PRODUCT_ID`)
+    REFERENCES `fleamarket`.`PRODUCT` (`PRODUCT_ID`),
+  CONSTRAINT `FK_USER_TO_WISH_LIST_1`
+    FOREIGN KEY (`ID`)
+    REFERENCES `fleamarket`.`USER` (`ID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `fleamarket`.`CHAT_MESSAGE`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fleamarket`.`CHAT_MESSAGE` (
+  `CHAT_MESSAGE_ID` BIGINT NOT NULL AUTO_INCREMENT,
+  `CHAT_LIST_ID` INT UNSIGNED NOT NULL,
+  `SENDER_ID` VARCHAR(45) NOT NULL,
+  `MESSAGE` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`CHAT_MESSAGE_ID`),
+  INDEX `fk_CHAT_MESSAGE_USER1_idx` (`SENDER_ID` ASC) VISIBLE,
+  INDEX `fk_CHAT_MESSAGE_CHAT_LIST1_idx` (`CHAT_LIST_ID` ASC) VISIBLE,
+  CONSTRAINT `fk_CHAT_MESSAGE_USER1`
+    FOREIGN KEY (`SENDER_ID`)
+    REFERENCES `fleamarket`.`USER` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CHAT_MESSAGE_CHAT_LIST1`
+    FOREIGN KEY (`CHAT_LIST_ID`)
+    REFERENCES `fleamarket`.`CHAT_LIST` (`CHAT_LIST_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
